@@ -10,8 +10,14 @@
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"> Action </a>
             <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#">Member</a></li>
-              <li><a class="dropdown-item" href="#">Transaksi</a></li>
+              <li><router-link :to="{ name: 'kasirhome' }" class="dropdown-item">Data Member</router-link></li>
+              <li><router-link :to="{ name: 'aktivasi' }" class="dropdown-item">T. Aktivasi</router-link></li>
+              <li><router-link :to="{ name: 'deporeguler' }" class="dropdown-item">T. Uang Reguler</router-link></li>
+              <li><router-link :to="{ name: 'depokelas' }" class="dropdown-item">T. Deposit Kelas</router-link></li>
+              <li><router-link :to="{ name: 'listMexp' }" class="dropdown-item">Sistem - Member Exp</router-link></li>
+              <li><router-link :to="{ name: 'listDexp' }" class="dropdown-item">Sistem - Depo Exp</router-link></li>
+              <li><router-link :to="{ name: 'indexgym' }" class="dropdown-item">Presensi Gym</router-link></li>
+              <li><router-link :to="{ name: 'indexPresensiKls' }" class="dropdown-item">Presensi Kelas</router-link></li>
               <li><hr class="dropdown-divider" /></li>
               <li class="nav-item" style="text-align: center">
                 <button class="btn btn-outline-danger" @click="logout">Logout</button>
@@ -31,30 +37,24 @@
         <div class="card border-0 rounded shadow">
           <div class="card-body">
             <div class="row">
-              <div class="col-md-6" style="margin-left: 8%">
-                <router-link :to="{ name: 'addmember' }" class="btn btn-md btn-success">TAMBAH MEMBER</router-link>
-              </div>
-              <div class="col-md-2 offset-md-2">
-                <input type="text" class="form-control me-2" v-model="searchInput" />
-                <ul>
-                  <li v-for="item in displayedMembers" :key="item.id">{{ item.nama_member }}</li>
-                </ul>
+              <div class="col-md-6">
+                <router-link :to="{ name: 'addmember' }" class="btn btn-md btn-success shadow">TAMBAH MEMBER</router-link>
               </div>
             </div>
 
-            <table class="table table-striped table-bordered mt-4 table-responsive">
+            <table class="table table-striped table-bordered mt-4 table-responsive shadow">
               <thead class="thead-dark">
                 <tr class="text-center">
                   <th scope="col">NAMA MEMBER</th>
                   <th scope="col">EMAIL</th>
 
-                  <th scope="col">JENIS KELAMIN</th>
                   <th scope="col">NOMOR TELEPON</th>
-                  <th scope="col">TANGGAL LAHIR</th>
+
                   <th scope="col">TANGGAL KADALUARSA</th>
 
                   <th scope="col">STATUS</th>
                   <th scope="col">AKSI</th>
+                  <th scope="col">TRANSAKSI</th>
                   <th scope="col">CARD</th>
                 </tr>
               </thead>
@@ -63,18 +63,24 @@
                   <td>{{ user.nama_member }}</td>
                   <td>{{ user.email }}</td>
 
-                  <td>{{ user.jk_member }}</td>
                   <td>{{ user.telp_member }}</td>
-                  <td>{{ user.tgl_lahir_member }}</td>
+
                   <td v-if="user.tgl_expired_member">{{ user.tgl_expired_member }}</td>
                   <td v-else>- - -</td>
 
                   <td v-if="user.status_member">Aktif</td>
                   <td v-else>Tidak Aktif</td>
                   <td class="text-center">
-                    <router-link :to="{ name: 'editmember', params: { id: user.id } }" class="btn btn-sm btn-primary mr-1"> EDIT</router-link>&nbsp;
-                    <button type="button" class="btn btn-sm btn-danger mr-1" data-bs-toggle="modal" data-bs-target="#exampleModal" @click="getId(user.id)">DELETE</button>&nbsp;
-                    <button type="button" class="btn btn-sm btn-success mr-1" data-bs-toggle="modal" data-bs-target="#exampleModal2" @click="getId(user.id)">RESET PW</button>
+                    <router-link :to="{ name: 'editmember', params: { id: user.id } }" class="btn btn-sm btn-primary mr-1"><i class="bi bi-pencil-square"></i></router-link>&nbsp;
+                    <button type="button" class="btn btn-sm btn-danger mr-1" data-bs-toggle="modal" data-bs-target="#exampleModal" @click="getId(user.id)"><i class="bi bi-trash"></i></button>&nbsp;
+                    <button type="button" class="btn btn-sm btn-success mr-1" data-bs-toggle="modal" data-bs-target="#exampleModal2" @click="getId(user.id)">RESET PW</button>&nbsp;
+                  </td>
+                  <td class="text-center">
+                    <span v-if="user.status_member === 1"><button class="btn btn-secondary btn-sm" disabled>AKTIVASI</button></span>&nbsp;
+                    <span v-else
+                      ><router-link :to="{ name: 'addaktivasi', params: { id: user.id } }"><button class="btn btn-outline-success btn-sm">AKTIVASI</button></router-link></span
+                    >&nbsp; <router-link :to="{ name: 'adddeporeguler', params: { id: user.id } }"><button class="btn btn-outline-success btn-sm">REGULER</button></router-link>&nbsp;
+                    <router-link :to="{ name: 'adddepokelas', params: { id: user.id } }"><button class="btn btn-outline-primary btn-sm">KELAS</button></router-link>&nbsp;
                   </td>
                   <td class="text-center">
                     <button class="btn btn-sm btn-success m-1" @click="generatePdf(user.id)"><i class="bi bi-filetype-pdf"></i></button>
@@ -117,6 +123,23 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">BATAL</button>
           <button type="button" class="btn btn-danger" @click="resetPW(user.id)">RESET</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal DEPOSIT-->
+  <div class="modal fade" id="exampleModal3" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Konfirmasi</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">PILIH DEPOSIT</div>
+        <div class="modal-footer">
+          <router-link :to="{ name: 'adddeporeguler', params: { id: user.id } }"><button class="btn btn-outline-success btn-sm">UANG REGULER</button></router-link>
+          <button type="button" class="btn btn-danger">KELAS</button>
         </div>
       </div>
     </div>
@@ -227,13 +250,22 @@ export default {
           this.member = response.data.data;
 
           // Create a new PDF document
-          const doc = new jsPDF();
+          var doc = new jsPDF();
 
-          // Add a table with the data to the PDF
-          const columns = ["ID", "Nama", "Tanggal Kadaluarsa", "Tanggal Lahir"];
-          const rows = [[this.member.id_member, this.member.nama_member, this.member.tgl_expired_member, this.member.tgl_lahir_member]];
+          // Define the position and size of the card
+          var cardX = 10;
+          var cardY = 10;
+          var cardWidth = 150;
+          var cardHeight = 50;
 
-          doc.autoTable(columns, rows);
+          // Draw the card border
+          doc.rect(cardX, cardY, cardWidth, cardHeight);
+
+          // Write the member data inside the card
+          doc.text("ID Member: " + this.member.id_member, cardX + 5, cardY + 10);
+          doc.text("Nama Member: " + this.member.nama_member, cardX + 5, cardY + 20);
+          doc.text("Alamat Member: " + this.member.alamat_member, cardX + 5, cardY + 30);
+          doc.text("Tanggal Lahir Member: " + this.member.tgl_lahir_member, cardX + 5, cardY + 40);
 
           // Download the PDF
           doc.save("members.pdf");

@@ -8,8 +8,17 @@
             <hr />
             <form @submit.prevent="store">
               <div class="form-group mb-3">
-                <label class="form-label">Hari</label>
-                <input type="text" class="form-control" v-model="ju.hari" placeholder="Masukan Hari" />
+                <label for="content" class="form-label">Hari</label>
+                <select class="form-control" v-model="ju.hari">
+                  <option value="" selected disabled>Pilih Hari</option>
+                  <option value="Monday">Senin</option>
+                  <option value="Tuesday">Selasa</option>
+                  <option value="Wednesday">Rabu</option>
+                  <option value="Thursday">Kamis</option>
+                  <option value="Friday">Jumat</option>
+                  <option value="Saturday">Sabtu</option>
+                  <option value="Sunday">Minggu</option>
+                </select>
                 <!-- validation -->
                 <div v-if="validation.hari" class="mt-2 alert alert-danger">
                   {{ validation.hari[0] }}
@@ -17,7 +26,15 @@
               </div>
               <div class="form-group mb-3">
                 <label for="content" class="form-label">Jam Kelas</label>
-                <input class="form-control" v-model="ju.jam_kelas" placeholder="Masukkan Jam Kelas dimulai" />
+                <select class="form-control" v-model="ju.jam_kelas">
+                  <option value="" selected disabled>Pilih Jam Kelas</option>
+                  <option value="07:00:00">07:00</option>
+                  <option value="10:00:00">10:00</option>
+                  <option value="13:00:00">13:00</option>
+                  <option value="16:00:00">16:00</option>
+                  <option value="19:00:00">19:00</option>
+                  <option value="22:00:00">22:00</option>
+                </select>
                 <!-- validation -->
                 <div v-if="validation.jam_kelas" class="mt-2 alert alert-danger">
                   {{ validation.jam_kelas[0] }}

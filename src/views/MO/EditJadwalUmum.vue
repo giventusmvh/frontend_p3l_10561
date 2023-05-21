@@ -11,13 +11,13 @@
                 <label for="content" class="form-label">Hari</label>
                 <select class="form-control" v-model="ju.hari">
                   <option value="" selected disabled>Pilih Hari</option>
-                  <option value="Senin">Senin</option>
-                  <option value="Selasa">Selasa</option>
-                  <option value="Rabu">Rabu</option>
-                  <option value="Kamis">Kamis</option>
-                  <option value="Jumat">Jumat</option>
-                  <option value="Sabtu">Sabtu</option>
-                  <option value="Minggu">Minggu</option>
+                  <option value="Monday">Senin</option>
+                  <option value="Tuesday">Selasa</option>
+                  <option value="Wednesday">Rabu</option>
+                  <option value="Thursday">Kamis</option>
+                  <option value="Friday">Jumat</option>
+                  <option value="Saturday">Sabtu</option>
+                  <option value="Sunday">Minggu</option>
                 </select>
                 <!-- validation -->
                 <div v-if="validation.hari" class="mt-2 alert alert-danger">

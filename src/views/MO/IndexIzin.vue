@@ -24,39 +24,38 @@
     </div>
   </nav>
   <div class="container d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">Jadwal Umum</h1>
+    <h1 class="h2">LIST SEMUA PERIZINAN</h1>
   </div>
-  <div class="mt-5 container">
+  <div class="container mt-5">
     <div class="row">
       <div class="col-md-12">
         <div class="card border-0 rounded shadow">
           <div class="card-body">
-            <div class="container">
-              <router-link :to="{ name: 'addJU' }" class="btn btn-md btn-success shadow">TAMBAH JADWAL UMUM</router-link>
-            </div>
+            <!-- <router-link :to="{ name: 'addizin' }" class="btn btn-md btn-success shadow">TAMBAH INSTRUKTUR</router-link> -->
+            <router-link :to="{ name: 'perizinanbelum' }" class="btn btn-md btn-success shadow">TAMPIL BELUM KONFIRMASI</router-link>
 
             <table class="table table-striped table-bordered mt-4 table-responsive shadow">
               <thead class="thead-dark">
                 <tr class="text-center">
-                  <th scope="col">HARI</th>
-                  <th scope="col">JAM KELAS</th>
-
                   <th scope="col">NAMA INSTRUKTUR</th>
+                  <th scope="col">NAMA INSTRUKTUR PENGGANTI</th>
                   <th scope="col">KELAS</th>
+                  <th scope="col">TANGGAL MENGAJUKAN</th>
+                  <th scope="col">TANGGAL YANG DIAJUKAN</th>
+                  <th scope="col">KETERANGAN</th>
                   <th scope="col">AKSI</th>
                 </tr>
               </thead>
               <tbody class="text-center">
-                <tr v-for="(ju, id) in jus" :key="id">
-                  <td>{{ ju.hari }}</td>
-                  <td>{{ ju.jam_kelas }}</td>
-
-                  <td>{{ ju.nama_instruktur }}</td>
-                  <td>{{ ju.nama_kelas }}</td>
-                  <td class="text-center">
-                    <router-link :to="{ name: 'editJU', params: { id: ju.id } }" class="btn btn-sm btn-primary mr-1"> EDIT</router-link> <v-spacer></v-spacer>
-                    <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal" @click="getId(ju.id)">DELETE</button>
-                  </td>
+                <tr v-for="(izin, id) in izins" :key="id">
+                  <td>{{ izin.nama_instrukturIzin }}</td>
+                  <td>{{ izin.nama_instrukturPengganti }}</td>
+                  <td>{{ izin.nama_kelas }}</td>
+                  <td>{{ izin.tgl_izin_dibuat }}</td>
+                  <td>{{ izin.tgl_izin }}</td>
+                  <td>{{ izin.keterangan }}</td>
+                  <td v-if="izin.konfirmasi === 0"><button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal" @click="getId(izin.id)">KONFIRMASI</button></td>
+                  <td v-else><button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal" disabled>KONFIRMASI</button></td>
                 </tr>
               </tbody>
             </table>
@@ -65,6 +64,7 @@
       </div>
     </div>
   </div>
+  <!-- Button trigger modal -->
 
   <!-- Modal -->
   <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -74,10 +74,10 @@
           <h1 class="modal-title fs-5" id="exampleModalLabel">Konfirmasi</h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body">Yakin ingin menghapus data jadwal umum ?</div>
+        <div class="modal-body">Yakin konfirmasi data izin {{ izin.id }}?</div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">BATAL</button>
-          <button type="button" class="btn btn-danger" @click="del(ju.id)">HAPUS</button>
+          <button type="button" class="btn btn-danger" @click="konfirmasi(izin.id)">KONFIRMASI</button>
         </div>
       </div>
     </div>
@@ -96,9 +96,10 @@ export default {
       duration: 2000,
     });
     //reactive state
-    let jus = ref([]);
-    const ju = reactive({
+    let izins = ref([]);
+    const izin = reactive({
       id: "",
+      nama_izin: "",
     });
     //state validation
     const validation = ref([]);
@@ -117,23 +118,28 @@ export default {
       //get API from Laravel Backend
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       axios
-        .get("http://127.0.0.1:8000/api/jadwalUmum/index")
+        .get("http://127.0.0.1:8000/api/izinInstruktur/")
         .then((response) => {
           //assign state posts with response data
-          jus.value = response.data.data;
+          izins.value = response.data.data;
         })
         .catch((error) => {
           console.log(error.response.data);
         });
     });
-    function del(id) {
+    function getId(id) {
+      axios.get(`http://127.0.0.1:8000/api/izinInstruktur/showByID/${id}`, {}).then((response) => {
+        izin.id = response.data.data.id;
+      });
+    }
+
+    function konfirmasi(id) {
       axios
-        .delete(`http://127.0.0.1:8000/api/jadwalUmum/${id}`, {})
+        .put(`http://127.0.0.1:8000/api/izinInstruktur/konfirmasi/${id}`, {})
         .then(() => {
           //redirect ke halaman login
-
           window.location.reload().then(() => {
-            toaster.warning(`Berhasil Delete Jadwal Umum`);
+            toaster.warning(`Berhasil Konfirmasi Perizinan`);
           });
         })
         .catch((error) => {
@@ -141,11 +147,7 @@ export default {
           validation.value = error.response.data;
         });
     }
-    function getId(id) {
-      axios.get(`http://127.0.0.1:8000/api/jadwalUmum/${id}`, {}).then((response) => {
-        ju.id = response.data.data.id;
-      });
-    }
+
     function logout() {
       localStorage.removeItem("token");
       localStorage.removeItem("id");
@@ -159,11 +161,12 @@ export default {
     }
     //return
     return {
-      jus,
-      del,
+      izins,
+      izin,
       getId,
+      konfirmasi,
       logout,
-      ju,
+      selectedInstrukturId: null,
     };
   },
 };

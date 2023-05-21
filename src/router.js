@@ -29,9 +29,49 @@ const routes = [
     component: () => import("@/views/Kasir/KasirHome.vue"),
   },
   {
+    path: "/listMemberExp",
+    name: "listMexp",
+    component: () => import("@/views/Sistem/indexMemberExp.vue"),
+  },
+  {
+    path: "/listDepoExp",
+    name: "listDexp",
+    component: () => import("@/views/Sistem/indexDepoExp.vue"),
+  },
+  {
     path: "/addmember",
     name: "addmember",
     component: () => import("@/views/Kasir/AddMember.vue"),
+  },
+  {
+    path: "/aktivasi",
+    name: "aktivasi",
+    component: () => import("@/views/Kasir/IndexTransaksiAktivasi.vue"),
+  },
+  {
+    path: "/addaktivasi",
+    name: "addaktivasi",
+    component: () => import("@/views/Kasir/AddAktivasi.vue"),
+  },
+  {
+    path: "/deporeguler",
+    name: "deporeguler",
+    component: () => import("@/views/Kasir/IndexDepositReguler.vue"),
+  },
+  {
+    path: "/adddeporeguler",
+    name: "adddeporeguler",
+    component: () => import("@/views/Kasir/AddDepositReguler.vue"),
+  },
+  {
+    path: "/depokelas",
+    name: "depokelas",
+    component: () => import("@/views/Kasir/IndexDepositKelas.vue"),
+  },
+  {
+    path: "/adddepokelas",
+    name: "adddepokelas",
+    component: () => import("@/views/Kasir/AddDepositKelas.vue"),
   },
   {
     path: "/editmember",
@@ -52,6 +92,31 @@ const routes = [
     path: "/editJadwalUmum",
     name: "editJU",
     component: () => import("@/views/MO/EditJadwalUmum.vue"),
+  },
+  {
+    path: "/JadwalHarian",
+    name: "jadwalHarian",
+    component: () => import("@/views/MO/IndexJadwalHarian.vue"),
+  },
+  {
+    path: "/IndexIzinInstruktur",
+    name: "perizinan",
+    component: () => import("@/views/MO/IndexIzin.vue"),
+  },
+  {
+    path: "/IndexIzinInstruktur/NotYetConfirmed",
+    name: "perizinanbelum",
+    component: () => import("@/views/MO/IndexIzinNot.vue"),
+  },
+  {
+    path: "/indexgym",
+    name: "indexgym",
+    component: () => import("@/views/Kasir/IndexPresensiGym.vue"),
+  },
+  {
+    path: "/indexPresensiKls",
+    name: "indexPresensiKls",
+    component: () => import("@/views/Kasir/IndexPresensiKelas.vue"),
   },
   //   {
   //     path: "/",

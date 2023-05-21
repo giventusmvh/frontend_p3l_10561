@@ -40,8 +40,12 @@
                 </div>
               </div>
               <div class="form-group mb-3">
-                <label class="form-label">Jenis Kelamin Member</label>
-                <input type="text" class="form-control" v-model="user.jk_member" placeholder="Masukkan Jenis Kelamin member" />
+                <label for="content" class="form-label">Jenis Kelamin</label>
+                <select class="form-control" v-model="user.jk_member">
+                  <option value="" selected disabled>Pilih Jenis Kelamin</option>
+                  <option value="Pria">Pria</option>
+                  <option value="Wanita">Wanita</option>
+                </select>
                 <!-- validation -->
                 <div v-if="validation.jk_member" class="mt-2 alert alert-danger">
                   {{ validation.jk_member[0] }}
@@ -64,14 +68,14 @@
                 </div>
               </div>
 
-              <div class="form-group mb-3">
+              <!-- <div class="form-group mb-3">
                 <label for="content" class="form-label">Deposit Uang</label>
                 <input class="form-control" v-model="user.deposit_uang_member" placeholder="Masukkan Deposit Uang" />
-                <!-- validation -->
+                
                 <div v-if="validation.deposit_uang_member" class="mt-2 alert alert-danger">
                   {{ validation.deposit_uang_member[0] }}
                 </div>
-              </div>
+              </div> -->
               <!-- <div class="form-group mb-3">
                 <label for="content" class="form-label">Status Member</label>
                 <input class="form-control" type="text" v-model="user.status_member" placeholder="Masukkan Status" />
@@ -115,7 +119,7 @@ export default {
       tgl_lahir_member: "",
       telp_member: "",
       jk_member: "",
-      deposit_uang_member: "",
+      // deposit_uang_member: "",
       // status_member: "",
       email: "",
       password: "",
@@ -148,7 +152,7 @@ export default {
           user.tgl_lahir_member = response.data.data.tgl_lahir_member;
           user.telp_member = response.data.data.telp_member;
           user.jk_member = response.data.data.jk_member;
-          user.deposit_uang_member = response.data.data.deposit_uang_member;
+          // user.deposit_uang_member = response.data.data.deposit_uang_member;
           // user.status_member = response.data.data.status_member;
           user.email = response.data.data.email;
           user.password = response.data.data.password;
@@ -166,7 +170,7 @@ export default {
       let email = user.email;
       let jk_member = user.jk_member;
       // let status_member = user.status_member;
-      let deposit_uang_member = user.deposit_uang_member;
+      // let deposit_uang_member = user.deposit_uang_member;
       let password = user.password;
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       axios
@@ -178,7 +182,7 @@ export default {
           email: email,
           jk_member: jk_member,
           // status_member: status_member,
-          deposit_uang_member: deposit_uang_member,
+          // deposit_uang_member: deposit_uang_member,
           password: password,
         })
         .then(() => {

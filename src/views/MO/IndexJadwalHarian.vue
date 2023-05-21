@@ -23,8 +23,8 @@
       </div>
     </div>
   </nav>
-  <div class="container d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">Jadwal Umum</h1>
+  <div class="container d-flex jhstify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Jadwal Harian</h1>
   </div>
   <div class="mt-5 container">
     <div class="row">
@@ -32,31 +32,37 @@
         <div class="card border-0 rounded shadow">
           <div class="card-body">
             <div class="container">
-              <router-link :to="{ name: 'addJU' }" class="btn btn-md btn-success shadow">TAMBAH JADWAL UMUM</router-link>
+              <button @click="generateJadwalHarian()" class="btn btn-md btn-success shadow">Generate Jadwal Harian</button>
             </div>
 
             <table class="table table-striped table-bordered mt-4 table-responsive shadow">
               <thead class="thead-dark">
                 <tr class="text-center">
                   <th scope="col">HARI</th>
+                  <th scope="col">TANGGAL</th>
                   <th scope="col">JAM KELAS</th>
-
                   <th scope="col">NAMA INSTRUKTUR</th>
                   <th scope="col">KELAS</th>
+                  <th scope="col">PENGGANTI</th>
+                  <th scope="col">STATUS</th>
                   <th scope="col">AKSI</th>
                 </tr>
               </thead>
               <tbody class="text-center">
-                <tr v-for="(ju, id) in jus" :key="id">
-                  <td>{{ ju.hari }}</td>
-                  <td>{{ ju.jam_kelas }}</td>
+                <tr v-for="(jh, id) in jhs" :key="id">
+                  <td>{{ jh.hari }}</td>
+                  <td>{{ jh.tanggal }}</td>
+                  <td>{{ jh.jam_kelas }}</td>
 
-                  <td>{{ ju.nama_instruktur }}</td>
-                  <td>{{ ju.nama_kelas }}</td>
-                  <td class="text-center">
-                    <router-link :to="{ name: 'editJU', params: { id: ju.id } }" class="btn btn-sm btn-primary mr-1"> EDIT</router-link> <v-spacer></v-spacer>
-                    <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal" @click="getId(ju.id)">DELETE</button>
-                  </td>
+                  <td>{{ jh.nama_instruktur }}</td>
+                  <td>{{ jh.nama_kelas }}</td>
+                  <td v-if="jh.status_jadwalHarian === NULL">NaN</td>
+                  <td v-else>{{ jh.nama_instruktur_pengganti }}</td>
+                  <td v-if="jh.status_jadwalHarian === 1">Masuk</td>
+                  <td v-else>Libur</td>
+
+                  <td v-if="jh.konfirmasi === 1"><button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal" @click="getId(jh.id)">UPDATE</button></td>
+                  <td v-else><button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal" disabled>UPDATE</button></td>
                 </tr>
               </tbody>
             </table>
@@ -74,20 +80,22 @@
           <h1 class="modal-title fs-5" id="exampleModalLabel">Konfirmasi</h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body">Yakin ingin menghapus data jadwal umum ?</div>
+        <div class="modal-body">Yakin ingin meliburkan jadwal harian ?</div>
         <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click="gantiInstruktur(jh.id)">GANTI INSTRUKTUR</button>
+          <button type="button" class="btn btn-danger" @click="libur(jh.id)">LIBURKAN</button>
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">BATAL</button>
-          <button type="button" class="btn btn-danger" @click="del(ju.id)">HAPUS</button>
         </div>
       </div>
     </div>
   </div>
 </template>
-//
+
 <script>
 import axios from "axios";
 import { onMounted, ref, reactive } from "vue";
 import { useRouter } from "vue-router";
+
 import { createToaster } from "@meforma/vue-toaster";
 export default {
   setup() {
@@ -96,12 +104,12 @@ export default {
       duration: 2000,
     });
     //reactive state
-    let jus = ref([]);
-    const ju = reactive({
+    let jhs = ref([]);
+    const jh = reactive({
       id: "",
     });
     //state validation
-    const validation = ref([]);
+    // const validation = ref([]);
     const router = useRouter();
     const token = localStorage.getItem("token");
     const role = localStorage.getItem("role");
@@ -117,34 +125,56 @@ export default {
       //get API from Laravel Backend
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       axios
-        .get("http://127.0.0.1:8000/api/jadwalUmum/index")
+        .get("http://127.0.0.1:8000/api/jadwalHarian/index")
         .then((response) => {
           //assign state posts with response data
-          jus.value = response.data.data;
+          jhs.value = response.data.data;
         })
         .catch((error) => {
           console.log(error.response.data);
         });
     });
-    function del(id) {
+    function getId(id) {
+      axios.get(`http://127.0.0.1:8000/api/jadwalHarian/${id}`, {}).then((response) => {
+        jh.id = response.data.data.id;
+      });
+    }
+    function libur(id) {
+      axios.put(`http://127.0.0.1:8000/api/jadwalHarian/libur/${id}`, {}).then(() => {
+        //redirect ke halaman login
+
+        window.location.reload().then(() => {
+          toaster.warning(`Berhasil Meliburkan Jadwal`);
+        });
+      });
+    }
+
+    function gantiInstruktur(id) {
+      axios.put(`http://127.0.0.1:8000/api/jadwalHarian/gantiInstruktur/${id}`, {}).then(() => {
+        //redirect ke halaman login
+
+        window.location.reload().then(() => {
+          toaster.warning(`Berhasil Mengganti Instruktur`);
+        });
+      });
+    }
+    function generateJadwalHarian() {
       axios
-        .delete(`http://127.0.0.1:8000/api/jadwalUmum/${id}`, {})
+        .get("http://127.0.0.1:8000/api/jadwalHarian/generate")
         .then(() => {
           //redirect ke halaman login
 
           window.location.reload().then(() => {
-            toaster.warning(`Berhasil Delete Jadwal Umum`);
+            toaster.warning(`Berhasil Generate Jadwal Harian`);
           });
         })
+
         .catch((error) => {
           //assign state validation with error
-          validation.value = error.response.data;
+          if (error.response.data.cekGenerate) {
+            toaster.warning(`Anda Sudah Generate Jadwal Harian Minggu ini`);
+          }
         });
-    }
-    function getId(id) {
-      axios.get(`http://127.0.0.1:8000/api/jadwalUmum/${id}`, {}).then((response) => {
-        ju.id = response.data.data.id;
-      });
     }
     function logout() {
       localStorage.removeItem("token");
@@ -159,11 +189,13 @@ export default {
     }
     //return
     return {
-      jus,
-      del,
-      getId,
+      jhs,
+      generateJadwalHarian,
       logout,
-      ju,
+      gantiInstruktur,
+      jh,
+      getId,
+      libur,
     };
   },
 };

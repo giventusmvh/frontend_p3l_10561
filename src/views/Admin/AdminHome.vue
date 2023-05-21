@@ -22,9 +22,9 @@
       <div class="col-md-12">
         <div class="card border-0 rounded shadow">
           <div class="card-body">
-            <router-link :to="{ name: 'addinstruktur' }" class="btn btn-md btn-success">TAMBAH INSTRUKTUR</router-link>
+            <router-link :to="{ name: 'addinstruktur' }" class="btn btn-md btn-success shadow">TAMBAH INSTRUKTUR</router-link>
 
-            <table class="table table-striped table-bordered mt-4 table-responsive">
+            <table class="table table-striped table-bordered mt-4 table-responsive shadow">
               <thead class="thead-dark">
                 <tr class="text-center">
                   <th scope="col">NAMA INSTRUKTUR</th>
