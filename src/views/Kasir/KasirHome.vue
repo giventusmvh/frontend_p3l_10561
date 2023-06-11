@@ -41,7 +41,9 @@
                 <router-link :to="{ name: 'addmember' }" class="btn btn-md btn-success shadow">TAMBAH MEMBER</router-link>
               </div>
             </div>
-
+            <div class="form-group mt-4">
+              <input type="text" class="form-control" placeholder="Cari" v-model="searchKeyword" />
+            </div>
             <table class="table table-striped table-bordered mt-4 table-responsive shadow">
               <thead class="thead-dark">
                 <tr class="text-center">
@@ -59,7 +61,7 @@
                 </tr>
               </thead>
               <tbody class="text-center">
-                <tr v-for="(user, id) in users" :key="id">
+                <tr v-for="(user, id) in filteredUsers" :key="id">
                   <td>{{ user.nama_member }}</td>
                   <td>{{ user.email }}</td>
 
@@ -76,7 +78,7 @@
                     <button type="button" class="btn btn-sm btn-success mr-1" data-bs-toggle="modal" data-bs-target="#exampleModal2" @click="getId(user.id)">RESET PW</button>&nbsp;
                   </td>
                   <td class="text-center">
-                    <span v-if="user.status_member === 1"><button class="btn btn-secondary btn-sm" disabled>AKTIVASI</button></span>&nbsp;
+                    <span v-if="user.status_member === '1'"><button class="btn btn-secondary btn-sm" disabled>AKTIVASI</button></span>&nbsp;
                     <span v-else
                       ><router-link :to="{ name: 'addaktivasi', params: { id: user.id } }"><button class="btn btn-outline-success btn-sm">AKTIVASI</button></router-link></span
                     >&nbsp; <router-link :to="{ name: 'adddeporeguler', params: { id: user.id } }"><button class="btn btn-outline-success btn-sm">REGULER</button></router-link>&nbsp;
@@ -150,7 +152,7 @@
 import { reactive } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, computed } from "vue";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 // import { createToaster } from "@meforma/vue-toaster";
@@ -162,7 +164,7 @@ export default {
     //   duration: 2000,
     // });
     //reactive state
-
+    const searchKeyword = ref("");
     let users = ref([]);
     const user = reactive({
       id: "",
@@ -177,7 +179,17 @@ export default {
       email: "",
       password: "",
     });
-
+    const filteredUsers = computed(() => {
+      const keyword = searchKeyword.value.toLowerCase().trim();
+      if (!keyword) {
+        return users.value;
+      } else {
+        return users.value.filter((user) => {
+          // Sesuaikan properti yang ingin dijadikan kriteria pencarian
+          return user.nama_member.toLowerCase().includes(keyword) || user.email.toLowerCase().includes(keyword) || user.telp_member.toLowerCase().includes(keyword);
+        });
+      }
+    });
     //state validation
     const validation = ref([]);
     const router = useRouter();
@@ -196,7 +208,7 @@ export default {
       //get API from Laravel Backend
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       axios
-        .get("http://127.0.0.1:8000/api/user")
+        .get("https://api.gofit.given.website/api/user")
         .then((response) => {
           //assign state posts with response data
           users.value = response.data.data;
@@ -207,7 +219,7 @@ export default {
     });
     function del(id) {
       axios
-        .delete(`http://127.0.0.1:8000/api/user/${id}`, {})
+        .delete(`https://api.gofit.given.website/api/user/${id}`, {})
         .then(() => {
           //redirect ke halaman login
           window.location.reload();
@@ -222,7 +234,7 @@ export default {
     }
     function resetPW(id) {
       axios
-        .put(`http://127.0.0.1:8000/api/resetPW/${id}`, {})
+        .put(`https://api.gofit.given.website/api/resetPW/${id}`, {})
         .then(() => {
           //redirect ke halaman login
           window.location.reload();
@@ -236,7 +248,7 @@ export default {
         });
     }
     function getId(id) {
-      axios.get(`http://127.0.0.1:8000/api/user/${id}`, {}).then((response) => {
+      axios.get(`https://api.gofit.given.website/api/user/${id}`, {}).then((response) => {
         user.id = response.data.data.id;
         user.nama_member = response.data.data.nama_member;
       });
@@ -244,7 +256,7 @@ export default {
     function generatePdf(id) {
       // Retrieve data from the database
       axios
-        .get(`http://127.0.0.1:8000/api/user/${id}`, {})
+        .get(`https://api.gofit.given.website/api/user/${id}`, {})
         .then((response) => {
           //assign state posts with response data
           this.member = response.data.data;
@@ -295,6 +307,8 @@ export default {
       generatePdf,
       user,
       getId,
+      searchKeyword,
+      filteredUsers,
     };
   },
 };

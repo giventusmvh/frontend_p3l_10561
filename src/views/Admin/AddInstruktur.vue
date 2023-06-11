@@ -108,7 +108,7 @@ export default {
       let password = instruktur.password;
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       axios
-        .post("http://127.0.0.1:8000/api/instruktur", {
+        .post("https://api.gofit.given.website/api/instruktur", {
           nama_instruktur: nama_instruktur,
           alamat_instruktur: alamat_instruktur,
           tgl_lahir_instruktur: tgl_lahir_instruktur,

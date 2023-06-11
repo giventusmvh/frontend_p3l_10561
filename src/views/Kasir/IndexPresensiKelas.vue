@@ -59,7 +59,7 @@
                   <td>{{ pkls.waktu_presensi_kelas }}</td>
                   <td v-if="pkls.id_depositKelasM">Paket</td>
                   <td v-else>Reguler</td>
-                  <td v-if="pkls.status_presensi === 1">Hadir</td>
+                  <td v-if="pkls.status_presensi === '1'">Hadir</td>
                   <td v-else>Tidak Hadir</td>
                   <td v-if="pkls.id_depositKelasM === null">
                     <button class="btn btn-sm btn-success m-1" @click="generateRegPdf(pkls.id, pkls.id_member, pkls.id_kelas, pkls.id_instruktur)"><i class="bi bi-filetype-pdf"></i></button>
@@ -118,7 +118,7 @@ export default {
       //get API from Laravel Backend
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       axios
-        .get("http://127.0.0.1:8000/api/presensiKelas/show")
+        .get("https://api.gofit.given.website/api/presensiKelas/show")
         .then((response) => {
           //assign state posts with response data
           pkelass.value = response.data.data;
@@ -132,10 +132,10 @@ export default {
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       axios
         .all([
-          axios.get(`http://127.0.0.1:8000/api/bookingKelas/showByID/${id1}`, {}),
-          axios.get(`http://127.0.0.1:8000/api/user/${id2}`, {}),
-          axios.get(`http://127.0.0.1:8000/api/kelas/${id3}`, {}),
-          axios.get(`http://127.0.0.1:8000/api/instruktur/${id4}`, {}),
+          axios.get(`https://api.gofit.given.website/api/bookingKelas/showByID/${id1}`, {}),
+          axios.get(`https://api.gofit.given.website/api/user/${id2}`, {}),
+          axios.get(`https://api.gofit.given.website/api/kelas/${id3}`, {}),
+          axios.get(`https://api.gofit.given.website/api/instruktur/${id4}`, {}),
         ])
         .then(
           axios.spread((res1, res2, res3, res4) => {
@@ -184,11 +184,11 @@ export default {
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       axios
         .all([
-          axios.get(`http://127.0.0.1:8000/api/bookingKelas/showByID/${id1}`, {}),
-          axios.get(`http://127.0.0.1:8000/api/user/${id2}`, {}),
-          axios.get(`http://127.0.0.1:8000/api/kelas/${id3}`, {}),
-          axios.get(`http://127.0.0.1:8000/api/instruktur/${id4}`, {}),
-          axios.get(`http://127.0.0.1:8000/api/depositKelas/${id5}`, {}),
+          axios.get(`https://api.gofit.given.website/api/bookingKelas/showByID/${id1}`, {}),
+          axios.get(`https://api.gofit.given.website/api/user/${id2}`, {}),
+          axios.get(`https://api.gofit.given.website/api/kelas/${id3}`, {}),
+          axios.get(`https://api.gofit.given.website/api/instruktur/${id4}`, {}),
+          axios.get(`https://api.gofit.given.website/api/depositKelas/${id5}`, {}),
         ])
         .then(
           axios.spread((res1, res2, res3, res4, res5) => {

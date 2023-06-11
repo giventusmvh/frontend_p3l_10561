@@ -102,7 +102,7 @@ export default {
 
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       axios
-        .get("http://127.0.0.1:8000/api/instruktur/" + route.params.id)
+        .get("https://api.gofit.given.website/api/instruktur/" + route.params.id)
         .then((response) => {
           //assign state posts with response data
           instruktur.nama_instruktur = response.data.data.nama_instruktur;
@@ -126,7 +126,7 @@ export default {
       let password = instruktur.password;
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       axios
-        .put("http://127.0.0.1:8000/api/instruktur/" + route.params.id, {
+        .put("https://api.gofit.given.website/api/instruktur/" + route.params.id, {
           nama_instruktur: nama_instruktur,
           alamat_instruktur: alamat_instruktur,
           tgl_lahir_instruktur: tgl_lahir_instruktur,

@@ -124,7 +124,7 @@ export default {
 
     function getJU() {
       axios
-        .get("http://127.0.0.1:8000/api/jadwalUmum/" + route.params.id)
+        .get("https://api.gofit.given.website/api/jadwalUmum/" + route.params.id)
         .then((response) => {
           //assign state posts with response data
           ju.id_kelas = response.data.data.id_kelas;
@@ -168,7 +168,7 @@ export default {
 
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       axios
-        .put("http://127.0.0.1:8000/api/jadwalUmum/update/" + route.params.id, {
+        .put("https://api.gofit.given.website/api/jadwalUmum/update/" + route.params.id, {
           id_instruktur: id_instruktur,
           id_kelas: id_kelas,
           hari: hari,

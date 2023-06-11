@@ -133,7 +133,7 @@ export default {
       // let deposit_uang_member = user.deposit_uang_member;
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       axios
-        .post("http://127.0.0.1:8000/api/user", {
+        .post("https://api.gofit.given.website/api/user", {
           nama_member: nama_member,
           alamat_member: alamat_member,
           tgl_lahir_member: tgl_lahir_member,

@@ -23,7 +23,9 @@
         <div class="card border-0 rounded shadow">
           <div class="card-body">
             <router-link :to="{ name: 'addinstruktur' }" class="btn btn-md btn-success shadow">TAMBAH INSTRUKTUR</router-link>
-
+            <div class="form-group mt-4">
+              <input type="text" class="form-control" placeholder="Cari" v-model="searchKeyword" />
+            </div>
             <table class="table table-striped table-bordered mt-4 table-responsive shadow">
               <thead class="thead-dark">
                 <tr class="text-center">
@@ -36,7 +38,7 @@
                 </tr>
               </thead>
               <tbody class="text-center">
-                <tr v-for="(instruktur, id) in instrukturs" :key="id">
+                <tr v-for="(instruktur, id) in filteredUsers" :key="id">
                   <td>{{ instruktur.nama_instruktur }}</td>
                   <td>{{ instruktur.alamat_instruktur }}</td>
                   <td>{{ instruktur.tgl_lahir_instruktur }}</td>
@@ -77,7 +79,7 @@
 //
 <script>
 import axios from "axios";
-import { onMounted, ref, reactive } from "vue";
+import { onMounted, ref, reactive, computed } from "vue";
 import { useRouter } from "vue-router";
 import { createToaster } from "@meforma/vue-toaster";
 export default {
@@ -93,6 +95,7 @@ export default {
       nama_instruktur: "",
     });
     //state validation
+    const searchKeyword = ref("");
     const validation = ref([]);
     const router = useRouter();
     const token = localStorage.getItem("token");
@@ -109,7 +112,7 @@ export default {
       //get API from Laravel Backend
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       axios
-        .get("http://127.0.0.1:8000/api/instruktur")
+        .get("https://api.gofit.given.website/api/instruktur")
         .then((response) => {
           //assign state posts with response data
           instrukturs.value = response.data.data;
@@ -119,14 +122,25 @@ export default {
         });
     });
     function getId(id) {
-      axios.get(`http://127.0.0.1:8000/api/instruktur/${id}`, {}).then((response) => {
+      axios.get(`https://api.gofit.given.website/api/instruktur/${id}`, {}).then((response) => {
         instruktur.id = response.data.data.id;
         instruktur.nama_instruktur = response.data.data.nama_instruktur;
       });
     }
+    const filteredUsers = computed(() => {
+      const keyword = searchKeyword.value.toLowerCase().trim();
+      if (!keyword) {
+        return instrukturs.value;
+      } else {
+        return instrukturs.value.filter((instruktur) => {
+          // Sesuaikan properti yang ingin dijadikan kriteria pencarian
+          return instruktur.nama_instruktur.toLowerCase().includes(keyword) || instruktur.email.toLowerCase().includes(keyword);
+        });
+      }
+    });
     function del(id) {
       axios
-        .delete(`http://127.0.0.1:8000/api/instruktur/${id}`, {})
+        .delete(`https://api.gofit.given.website/api/instruktur/${id}`, {})
         .then(() => {
           //redirect ke halaman login
           window.location.reload().then(() => {
@@ -157,6 +171,8 @@ export default {
       del,
       logout,
       selectedInstrukturId: null,
+      searchKeyword,
+      filteredUsers,
     };
   },
 };

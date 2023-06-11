@@ -143,7 +143,7 @@ export default {
 
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       axios
-        .get("http://127.0.0.1:8000/api/user/" + route.params.id)
+        .get("https://api.gofit.given.website/api/user/" + route.params.id)
         .then((response) => {
           //assign state posts with response data
           user.id_member = response.data.data.id_member;
@@ -174,7 +174,7 @@ export default {
       let password = user.password;
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       axios
-        .put("http://127.0.0.1:8000/api/user/" + route.params.id, {
+        .put("https://api.gofit.given.website/api/user/" + route.params.id, {
           nama_member: nama_member,
           alamat_member: alamat_member,
           tgl_lahir_member: tgl_lahir_member,

@@ -130,7 +130,7 @@ export default {
       //get API from Laravel Backend
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       axios
-        .get("http://127.0.0.1:8000/api/bookingGym")
+        .get("https://api.gofit.given.website/api/bookingGym")
         .then((response) => {
           //assign state posts with response data
           gyms.value = response.data.data;
@@ -141,14 +141,14 @@ export default {
     });
 
     function getId(id) {
-      axios.get(`http://127.0.0.1:8000/api/bookingGym/showByID/${id}`, {}).then((response) => {
+      axios.get(`https://api.gofit.given.website/api/bookingGym/showByID/${id}`, {}).then((response) => {
         gym.id = response.data.data.id;
       });
     }
 
     function presensi(id) {
       axios
-        .put(`http://127.0.0.1:8000/api/bookingGym/presensi/${id}`, {})
+        .put(`https://api.gofit.given.website/api/bookingGym/presensi/${id}`, {})
         .then(() => {
           //redirect ke halaman login
           window.location.reload();
@@ -164,10 +164,10 @@ export default {
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       axios
         .all([
-          axios.get(`http://127.0.0.1:8000/api/bookingGym/showByID/${id1}`, {}),
-          axios.get(`http://127.0.0.1:8000/api/user/${id2}`, {}),
-          axios.get(`http://127.0.0.1:8000/api/pegawai/${id3}`, {}),
-          axios.get(`http://127.0.0.1:8000/api/sesi/${id4}`, {}),
+          axios.get(`https://api.gofit.given.website/api/bookingGym/showByID/${id1}`, {}),
+          axios.get(`https://api.gofit.given.website/api/user/${id2}`, {}),
+          axios.get(`https://api.gofit.given.website/api/pegawai/${id3}`, {}),
+          axios.get(`https://api.gofit.given.website/api/sesi/${id4}`, {}),
         ])
         .then(
           axios.spread((res1, res2, res3, res4) => {

@@ -13,6 +13,10 @@
               <li><router-link :to="{ name: 'mohome' }" class="dropdown-item">Jadwal Umum</router-link></li>
               <li><router-link :to="{ name: 'jadwalHarian' }" class="dropdown-item">Jadwal Harian</router-link></li>
               <li><router-link :to="{ name: 'perizinan' }" class="dropdown-item">Perizinan Instruktur</router-link></li>
+              <li><router-link :to="{ name: 'laporanInstruktur' }" class="dropdown-item">Laporan Instruktur</router-link></li>
+              <li><router-link :to="{ name: 'laporanGym' }" class="dropdown-item">Laporan Gym</router-link></li>
+              <li><router-link :to="{ name: 'laporanKelas' }" class="dropdown-item">Laporan Kelas</router-link></li>
+              <li><router-link :to="{ name: 'laporanPendapatan' }" class="dropdown-item">Laporan Pendapatan</router-link></li>
               <li><hr class="dropdown-divider" /></li>
               <li class="nav-item" style="text-align: center">
                 <button class="btn btn-outline-danger" @click="logout">Logout</button>
@@ -34,7 +38,9 @@
             <div class="container">
               <button @click="generateJadwalHarian()" class="btn btn-md btn-success shadow">Generate Jadwal Harian</button>
             </div>
-
+            <div class="form-group mt-4">
+              <input type="text" class="form-control" placeholder="Cari" v-model="searchKeyword" />
+            </div>
             <table class="table table-striped table-bordered mt-4 table-responsive shadow">
               <thead class="thead-dark">
                 <tr class="text-center">
@@ -49,7 +55,7 @@
                 </tr>
               </thead>
               <tbody class="text-center">
-                <tr v-for="(jh, id) in jhs" :key="id">
+                <tr v-for="(jh, id) in filteredUsers" :key="id">
                   <td>{{ jh.hari }}</td>
                   <td>{{ jh.tanggal }}</td>
                   <td>{{ jh.jam_kelas }}</td>
@@ -58,10 +64,10 @@
                   <td>{{ jh.nama_kelas }}</td>
                   <td v-if="jh.status_jadwalHarian === NULL">NaN</td>
                   <td v-else>{{ jh.nama_instruktur_pengganti }}</td>
-                  <td v-if="jh.status_jadwalHarian === 1">Masuk</td>
+                  <td v-if="jh.status_jadwalHarian === '1'">Masuk</td>
                   <td v-else>Libur</td>
 
-                  <td v-if="jh.konfirmasi === 1"><button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal" @click="getId(jh.id)">UPDATE</button></td>
+                  <td v-if="jh.konfirmasi === '1'"><button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal" @click="getId(jh.id)">UPDATE</button></td>
                   <td v-else><button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal" disabled>UPDATE</button></td>
                 </tr>
               </tbody>
@@ -80,7 +86,7 @@
           <h1 class="modal-title fs-5" id="exampleModalLabel">Konfirmasi</h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body">Yakin ingin meliburkan jadwal harian ?</div>
+        <div class="modal-body">Yakin ingin update Libur / Ganti Instruktur ?</div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click="gantiInstruktur(jh.id)">GANTI INSTRUKTUR</button>
           <button type="button" class="btn btn-danger" @click="libur(jh.id)">LIBURKAN</button>
@@ -93,7 +99,7 @@
 
 <script>
 import axios from "axios";
-import { onMounted, ref, reactive } from "vue";
+import { onMounted, ref, reactive, computed } from "vue";
 import { useRouter } from "vue-router";
 
 import { createToaster } from "@meforma/vue-toaster";
@@ -104,6 +110,7 @@ export default {
       duration: 2000,
     });
     //reactive state
+    const searchKeyword = ref("");
     let jhs = ref([]);
     const jh = reactive({
       id: "",
@@ -113,7 +120,21 @@ export default {
     const router = useRouter();
     const token = localStorage.getItem("token");
     const role = localStorage.getItem("role");
+
+    const filteredUsers = computed(() => {
+      const keyword = searchKeyword.value.toLowerCase().trim();
+      if (!keyword) {
+        return jhs.value;
+      } else {
+        return jhs.value.filter((jh) => {
+          // Sesuaikan properti yang ingin dijadikan kriteria pencarian
+          return jh.hari.toLowerCase().includes(keyword) || jh.tanggal.toLowerCase().includes(keyword) || jh.nama_kelas.toLowerCase().includes(keyword) || jh.nama_instruktur.toLowerCase().includes(keyword);
+        });
+      }
+    });
+
     //mounted
+
     onMounted(() => {
       if (!token) {
         router.push({
@@ -125,7 +146,7 @@ export default {
       //get API from Laravel Backend
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       axios
-        .get("http://127.0.0.1:8000/api/jadwalHarian/index")
+        .get("https://api.gofit.given.website/api/jadwalHarian/index")
         .then((response) => {
           //assign state posts with response data
           jhs.value = response.data.data;
@@ -135,12 +156,12 @@ export default {
         });
     });
     function getId(id) {
-      axios.get(`http://127.0.0.1:8000/api/jadwalHarian/${id}`, {}).then((response) => {
+      axios.get(`https://api.gofit.given.website/api/jadwalHarian/${id}`, {}).then((response) => {
         jh.id = response.data.data.id;
       });
     }
     function libur(id) {
-      axios.put(`http://127.0.0.1:8000/api/jadwalHarian/libur/${id}`, {}).then(() => {
+      axios.put(`https://api.gofit.given.website/api/jadwalHarian/libur/${id}`, {}).then(() => {
         //redirect ke halaman login
 
         window.location.reload().then(() => {
@@ -150,7 +171,7 @@ export default {
     }
 
     function gantiInstruktur(id) {
-      axios.put(`http://127.0.0.1:8000/api/jadwalHarian/gantiInstruktur/${id}`, {}).then(() => {
+      axios.put(`https://api.gofit.given.website/api/jadwalHarian/gantiInstruktur/${id}`, {}).then(() => {
         //redirect ke halaman login
 
         window.location.reload().then(() => {
@@ -160,7 +181,7 @@ export default {
     }
     function generateJadwalHarian() {
       axios
-        .get("http://127.0.0.1:8000/api/jadwalHarian/generate")
+        .get("https://api.gofit.given.website/api/jadwalHarian/generate")
         .then(() => {
           //redirect ke halaman login
 
@@ -196,6 +217,8 @@ export default {
       jh,
       getId,
       libur,
+      searchKeyword,
+      filteredUsers,
     };
   },
 };

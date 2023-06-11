@@ -90,7 +90,7 @@ export default {
 
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       axios
-        .get("http://127.0.0.1:8000/api/user/" + route.params.id)
+        .get("https://api.gofit.given.website/api/user/" + route.params.id)
         .then((response) => {
           //assign state posts with response data
           user.id = response.data.data.id;
@@ -109,7 +109,7 @@ export default {
 
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       axios
-        .post("http://127.0.0.1:8000/api/aktivasi", {
+        .post("https://api.gofit.given.website/api/aktivasi", {
           id_pegawai_aktivasi: id_pegawai_aktivasi,
           id_member_aktivasi: id_member_aktivasi,
           jumlah_bayar_aktivasi: jumlah_bayar_aktivasi,

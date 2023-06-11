@@ -16,6 +16,8 @@
               <li><router-link :to="{ name: 'depokelas' }" class="dropdown-item">T. Deposit Kelas</router-link></li>
               <li><router-link :to="{ name: 'listMexp' }" class="dropdown-item">Sistem - Member Exp</router-link></li>
               <li><router-link :to="{ name: 'listDexp' }" class="dropdown-item">Sistem - Depo Exp</router-link></li>
+              <li><router-link :to="{ name: 'indexgym' }" class="dropdown-item">Presensi Gym</router-link></li>
+              <li><router-link :to="{ name: 'indexPresensiKls' }" class="dropdown-item">Presensi Kelas</router-link></li>
               <li><hr class="dropdown-divider" /></li>
               <li class="nav-item" style="text-align: center">
                 <button class="btn btn-outline-danger" @click="logout">Logout</button>
@@ -142,7 +144,7 @@ export default {
       //get API from Laravel Backend
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       axios
-        .get("http://127.0.0.1:8000/api/user/index/expired")
+        .get("https://api.gofit.given.website/api/user/index/expired")
         .then((response) => {
           //assign state posts with response data
           users.value = response.data.data;
@@ -153,7 +155,7 @@ export default {
     });
     function deaktivasi() {
       axios
-        .put(`http://127.0.0.1:8000/api/user/expired/deaktivasi`, {})
+        .put(`https://api.gofit.given.website/api/user/expired/deaktivasi`, {})
         .then(() => {
           //redirect ke halaman login
           window.location.reload();
@@ -168,7 +170,7 @@ export default {
     }
 
     function getId(id) {
-      axios.get(`http://127.0.0.1:8000/api/user/${id}`, {}).then((response) => {
+      axios.get(`https://api.gofit.given.website/api/user/${id}`, {}).then((response) => {
         user.id = response.data.data.id;
         user.nama_member = response.data.data.nama_member;
       });

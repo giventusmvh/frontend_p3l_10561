@@ -147,7 +147,7 @@ export default {
 
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       axios
-        .post("http://127.0.0.1:8000/api/jadwalUmum/add", {
+        .post("https://api.gofit.given.website/api/jadwalUmum/add", {
           id_instruktur: id_instruktur,
           id_kelas: id_kelas,
           hari: hari,

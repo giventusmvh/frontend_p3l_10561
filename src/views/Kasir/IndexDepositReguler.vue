@@ -113,7 +113,7 @@ export default {
       //get API from Laravel Backend
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       axios
-        .get("http://127.0.0.1:8000/api/transaksiUang")
+        .get("https://api.gofit.given.website/api/transaksiUang")
         .then((response) => {
           //assign state posts with response data
           uangs.value = response.data.data;
@@ -125,7 +125,7 @@ export default {
       //get API from Laravel Backend
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       axios
-        .get("http://127.0.0.1:8000/api/user")
+        .get("https://api.gofit.given.website/api/user")
         .then((response) => {
           //assign state posts with response data
           members.value = response.data.data;
@@ -139,7 +139,7 @@ export default {
       const id3 = localStorage.getItem("id");
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       axios
-        .all([axios.get(`http://127.0.0.1:8000/api/transaksiUang/${id1}`, {}), axios.get(`http://127.0.0.1:8000/api/user/${id2}`, {}), axios.get(`http://127.0.0.1:8000/api/pegawai/${id3}`, {})])
+        .all([axios.get(`https://api.gofit.given.website/api/transaksiUang/${id1}`, {}), axios.get(`https://api.gofit.given.website/api/user/${id2}`, {}), axios.get(`https://api.gofit.given.website/api/pegawai/${id3}`, {})])
         .then(
           axios.spread((res1, res2, res3) => {
             this.uang = res1.data.data;

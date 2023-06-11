@@ -28,38 +28,26 @@
     </div>
   </nav>
   <div class="container d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">LIST SEMUA PERIZINAN</h1>
+    <h1 class="h2">Laporan GYM Bulanan</h1>
   </div>
   <div class="container mt-5">
     <div class="row">
       <div class="col-md-12">
         <div class="card border-0 rounded shadow">
           <div class="card-body">
-            <!-- <router-link :to="{ name: 'addizin' }" class="btn btn-md btn-success shadow">TAMBAH INSTRUKTUR</router-link> -->
-            <router-link :to="{ name: 'perizinanbelum' }" class="btn btn-md btn-success shadow">TAMPIL BELUM KONFIRMASI</router-link>
-
+            <!-- <router-link :to="{ name: 'addlaporan' }" class="btn btn-md btn-success shadow">TAMBAH INSTRUKTUR</router-link> -->
+            <button class="btn btn-success m-1" @click="generatePdf()">Cetak Laporan</button>
             <table class="table table-striped table-bordered mt-4 table-responsive shadow">
               <thead class="thead-dark">
                 <tr class="text-center">
-                  <th scope="col">NAMA INSTRUKTUR</th>
-                  <th scope="col">NAMA INSTRUKTUR PENGGANTI</th>
-                  <th scope="col">KELAS</th>
-                  <th scope="col">TANGGAL MENGAJUKAN</th>
-                  <th scope="col">TANGGAL YANG DIAJUKAN</th>
-                  <th scope="col">KETERANGAN</th>
-                  <th scope="col">AKSI</th>
+                  <th scope="col">TANGGAL</th>
+                  <th scope="col">JUMLAH MEMBER</th>
                 </tr>
               </thead>
               <tbody class="text-center">
-                <tr v-for="(izin, id) in izins" :key="id">
-                  <td>{{ izin.nama_instrukturIzin }}</td>
-                  <td>{{ izin.nama_instrukturPengganti }}</td>
-                  <td>{{ izin.nama_kelas }}</td>
-                  <td>{{ izin.tgl_izin_dibuat }}</td>
-                  <td>{{ izin.tgl_izin }}</td>
-                  <td>{{ izin.keterangan }}</td>
-                  <td v-if="izin.konfirmasi === '0'"><button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal" @click="getId(izin.id)">KONFIRMASI</button></td>
-                  <td v-else><button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal" disabled>KONFIRMASI</button></td>
+                <tr v-for="(laporan, id) in laporans" :key="id">
+                  <td>{{ laporan.tgl_booking }}</td>
+                  <td>{{ laporan.jumlah_data }}</td>
                 </tr>
               </tbody>
             </table>
@@ -69,44 +57,24 @@
     </div>
   </div>
   <!-- Button trigger modal -->
-
-  <!-- Modal -->
-  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="exampleModalLabel">Konfirmasi</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">Yakin konfirmasi data izin {{ izin.id }}?</div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">BATAL</button>
-          <button type="button" class="btn btn-danger" @click="konfirmasi(izin.id)">KONFIRMASI</button>
-        </div>
-      </div>
-    </div>
-  </div>
 </template>
 //
 <script>
 import axios from "axios";
 import { onMounted, ref, reactive } from "vue";
 import { useRouter } from "vue-router";
-import { createToaster } from "@meforma/vue-toaster";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 export default {
   setup() {
-    const toaster = createToaster({
-      position: "top-right",
-      duration: 2000,
-    });
     //reactive state
-    let izins = ref([]);
-    const izin = reactive({
+    let laporans = ref([]);
+    const laporan = reactive({
       id: "",
-      nama_izin: "",
+      nama_instruktur: "",
     });
     //state validation
-    const validation = ref([]);
+
     const router = useRouter();
     const token = localStorage.getItem("token");
     const role = localStorage.getItem("role");
@@ -122,36 +90,59 @@ export default {
       //get API from Laravel Backend
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       axios
-        .get("https://api.gofit.given.website/api/izinInstruktur/")
+        .get("https://api.gofit.given.website/api/laporanGym")
         .then((response) => {
           //assign state posts with response data
-          izins.value = response.data.data;
+          laporans.value = response.data.data;
         })
         .catch((error) => {
           console.log(error.response.data);
         });
     });
-    function getId(id) {
-      axios.get(`https://api.gofit.given.website/api/izinInstruktur/showByID/${id}`, {}).then((response) => {
-        izin.id = response.data.data.id;
+    function generatePdf() {
+      const doc = new jsPDF();
+      const currentDate = new Date();
+      const month = currentDate.toLocaleString("default", { month: "long" });
+      const year = currentDate.getFullYear();
+      const date = currentDate.getDate();
+
+      const reportTitle = "LAPORAN GYM BULANAN";
+      const reportSubtitle = `BULAN: ${month}   TAHUN: ${year}`;
+      const reportSubtitle2 = `TGL CETAK: ${date} ${month} ${year}`;
+
+      // Generate PDF content
+      const table = document.querySelector(".table");
+      html2canvas(table).then((canvas) => {
+        const imgData = canvas.toDataURL("image/png");
+        const imgWidth = 185;
+        const pageHeight = 295;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        let heightLeft = imgHeight;
+        let position = 15;
+
+        doc.setFontSize(18);
+        doc.text(reportTitle, 15, position);
+        position += 10;
+        doc.setFontSize(12);
+        doc.text(reportSubtitle, 15, position);
+        position += 10;
+        doc.setFontSize(12);
+        doc.text(reportSubtitle2, 15, position);
+        position += 20;
+        doc.addImage(imgData, "PNG", 15, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight - position + 10;
+
+        while (heightLeft >= 0) {
+          position = heightLeft - imgHeight;
+          doc.addPage();
+          doc.addImage(imgData, "PNG", 15, position, imgWidth, imgHeight);
+          heightLeft -= pageHeight;
+        }
+
+        // Save the PDF
+        doc.save("laporan_gym_bulanan.pdf");
       });
     }
-
-    function konfirmasi(id) {
-      axios
-        .put(`https://api.gofit.given.website/api/izinInstruktur/konfirmasi/${id}`, {})
-        .then(() => {
-          //redirect ke halaman login
-          window.location.reload().then(() => {
-            toaster.warning(`Berhasil Konfirmasi Perizinan`);
-          });
-        })
-        .catch((error) => {
-          //assign state validation with error
-          validation.value = error.response.data;
-        });
-    }
-
     function logout() {
       localStorage.removeItem("token");
       localStorage.removeItem("id");
@@ -165,10 +156,9 @@ export default {
     }
     //return
     return {
-      izins,
-      izin,
-      getId,
-      konfirmasi,
+      laporans,
+      laporan,
+      generatePdf,
       logout,
       selectedInstrukturId: null,
     };

@@ -53,7 +53,12 @@
 
               <div class="form-group mb-3">
                 <label class="form-label">Jumlah Deposit Kelas</label>
-                <input type="text" class="form-control" v-model="transaksiKelas.jumlah_bayar_kelas" placeholder="Masukkan jumlah kelas" />
+
+                <select class="form-control" v-model="transaksiKelas.jumlah_bayar_kelas">
+                  <option value="" selected disabled>Masukkan Jumlah Deposit</option>
+                  <option value="5">5</option>
+                  <option value="10">10</option>
+                </select>
                 <!-- validation -->
                 <div v-if="validation.jumlah_bayar_kelas" class="mt-2 alert alert-danger">
                   {{ validation.jumlah_bayar_kelas[0] }}
@@ -120,7 +125,7 @@ export default {
 
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       axios
-        .get("http://127.0.0.1:8000/api/user/" + route.params.id)
+        .get("https://api.gofit.given.website/api/user/" + route.params.id)
         .then((response) => {
           //assign state posts with response data
           user.id = response.data.data.id;
@@ -134,7 +139,7 @@ export default {
 
     function getKelas() {
       axios
-        .get("http://localhost:8000/api/kelas")
+        .get("https://api.gofit.given.website/api/kelas")
         .then((response) => {
           //assign state posts with response data
           kelas.value = response.data.data;
@@ -154,7 +159,7 @@ export default {
 
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       axios
-        .post("http://127.0.0.1:8000/api/transaksiKelas", {
+        .post("https://api.gofit.given.website/api/transaksiKelas", {
           id_pegawai_kelas: id_pegawai_kelas,
           id_member_kelas: id_member_kelas,
           id_promo_kelas: id_promo_kelas,

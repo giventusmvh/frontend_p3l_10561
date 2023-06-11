@@ -118,6 +118,26 @@ const routes = [
     name: "indexPresensiKls",
     component: () => import("@/views/Kasir/IndexPresensiKelas.vue"),
   },
+  {
+    path: "/laporanInstruktur",
+    name: "laporanInstruktur",
+    component: () => import("@/views/MO/LaporanInstruktur.vue"),
+  },
+  {
+    path: "/laporanGym",
+    name: "laporanGym",
+    component: () => import("@/views/MO/LaporanGym.vue"),
+  },
+  {
+    path: "/laporanKelas",
+    name: "laporanKelas",
+    component: () => import("@/views/MO/LaporanKelas.vue"),
+  },
+  {
+    path: "/laporanPendapatan",
+    name: "laporanPendapatan",
+    component: () => import("@/views/MO/LaporanPendapatan.vue"),
+  },
   //   {
   //     path: "/",
   //     name: "User",

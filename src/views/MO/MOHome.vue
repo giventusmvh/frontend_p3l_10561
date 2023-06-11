@@ -13,6 +13,10 @@
               <li><router-link :to="{ name: 'mohome' }" class="dropdown-item">Jadwal Umum</router-link></li>
               <li><router-link :to="{ name: 'jadwalHarian' }" class="dropdown-item">Jadwal Harian</router-link></li>
               <li><router-link :to="{ name: 'perizinan' }" class="dropdown-item">Perizinan Instruktur</router-link></li>
+              <li><router-link :to="{ name: 'laporanInstruktur' }" class="dropdown-item">Laporan Instruktur</router-link></li>
+              <li><router-link :to="{ name: 'laporanGym' }" class="dropdown-item">Laporan Gym</router-link></li>
+              <li><router-link :to="{ name: 'laporanKelas' }" class="dropdown-item">Laporan Kelas</router-link></li>
+              <li><router-link :to="{ name: 'laporanPendapatan' }" class="dropdown-item">Laporan Pendapatan</router-link></li>
               <li><hr class="dropdown-divider" /></li>
               <li class="nav-item" style="text-align: center">
                 <button class="btn btn-outline-danger" @click="logout">Logout</button>
@@ -117,7 +121,7 @@ export default {
       //get API from Laravel Backend
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       axios
-        .get("http://127.0.0.1:8000/api/jadwalUmum/index")
+        .get("https://api.gofit.given.website/api/jadwalUmum/index")
         .then((response) => {
           //assign state posts with response data
           jus.value = response.data.data;
@@ -128,7 +132,7 @@ export default {
     });
     function del(id) {
       axios
-        .delete(`http://127.0.0.1:8000/api/jadwalUmum/${id}`, {})
+        .delete(`https://api.gofit.given.website/api/jadwalUmum/${id}`, {})
         .then(() => {
           //redirect ke halaman login
 
@@ -142,7 +146,7 @@ export default {
         });
     }
     function getId(id) {
-      axios.get(`http://127.0.0.1:8000/api/jadwalUmum/${id}`, {}).then((response) => {
+      axios.get(`https://api.gofit.given.website/api/jadwalUmum/${id}`, {}).then((response) => {
         ju.id = response.data.data.id;
       });
     }

@@ -76,7 +76,7 @@ export default {
     function login() {
       //send server with axios
       axios
-        .post("http://127.0.0.1:8000/api/loginWeb", user)
+        .post("https://api.gofit.given.website/api/loginWeb", user)
         .then((response) => {
           if (response.data.success) {
             //set token
